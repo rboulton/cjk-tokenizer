@@ -1,5 +1,5 @@
 #include <cassert>
-#include <unicode.h>
+#include <xapian/unicode.h>
 #include <cstring>
 #include "cjk-tokenizer.h"
 #include "cjk-hanconvert.h"
@@ -72,7 +72,6 @@ static void _split_string(string str, const string &delim,
 
 tokenizer::tokenizer() : ngram_size(2),
                          max_token_count(0) {
-    unicode_init();
 }
 
 tokenizer::~tokenizer() {
@@ -104,7 +103,7 @@ unsigned char* tokenizer::_unicode_to_char(unicode_char_t &uchar,
     return p;
 }
 
-void tokenizer::tokenize(const string &str, vector<string> &token_list) {
+void tokenizer::tokenize(const string &str, vector<pair<string, unsigned> > &token_list) {
     string token_str;
     vector<string> temp_token_list;
     vector<unicode_char_t> temp_uchar_list;
@@ -112,11 +111,13 @@ void tokenizer::tokenize(const string &str, vector<string> &token_list) {
     split(str, temp_token_list);
     split(str, temp_uchar_list);
 
+    unsigned int pos = 0;
     for (unsigned int i = 0; i < temp_token_list.size();) {
         if (max_token_count > 0
             && token_list.size() >= max_token_count) {
             break;
         }
+        ++pos;
         token_str.clear();
         if (UTF8_IS_CJK(temp_uchar_list[i])) {
             for (unsigned int j = i; j < i + ngram_size; ++j) {
@@ -129,7 +130,7 @@ void tokenizer::tokenize(const string &str, vector<string> &token_list) {
                 }
                 if (UTF8_IS_CJK(temp_uchar_list[j])) {
                     token_str += temp_token_list[j];
-                    token_list.push_back(token_str);
+                    token_list.push_back(make_pair(token_str, pos));
                 }
             }
             ++i;
@@ -152,33 +153,29 @@ void tokenizer::tokenize(const string &str, vector<string> &token_list) {
                 break;
             }
             if(token_str.length() > 0) {
-                token_list.push_back(token_str);
+                token_list.push_back(make_pair(token_str, pos));
             }
         }
     }
 }
 
 void tokenizer::tokenize(const std::string &str, tokenizer_handler &handler) {
-    vector<string> token_list;
+    vector<pair<string, unsigned> > token_list;
 
     tokenize(str, token_list);
-    for (vector<string>::iterator token_iter = token_list.begin();
+    for (vector<pair<string, unsigned> >::iterator token_iter = token_list.begin();
          token_iter != token_list.end(); ++token_iter) {
-        handler.handle_token(*token_iter, has_cjk(*token_iter));
+        handler.handle_token(token_iter->first, has_cjk(token_iter->first));
     }
 }
 
 void tokenizer::split(const string &str, vector<string> &token_list) {
     unicode_char_t uchar;
-    char *str_ptr = (char*) str.c_str();
-    int str_utf8_len = unicode_strlen(str_ptr, str.length());
     unsigned char p[sizeof(unicode_char_t) + 1];
-
-    for (int i = 0; i < str_utf8_len; ++i) {
-        str_ptr = unicode_get_utf8((const char*) str_ptr, &uchar);
-        if (str_ptr == NULL) {
-            break;
-        }
+    
+    Xapian::Utf8Iterator iter(str);
+    for (; iter != Xapian::Utf8Iterator(); ++iter) {
+        uchar = *iter;
         switch (han_conv_method) {
             case HAN_CONV_TRAD2SIMP : {
                 han_convert::trad2simp(uchar);
@@ -198,14 +195,10 @@ void tokenizer::split(const string &str, vector<string> &token_list) {
 
 void tokenizer::split(const string &str, vector<unicode_char_t> &token_list) {
     unicode_char_t uchar;
-    char *str_ptr = (char*) str.c_str();
-    int str_utf8_len = unicode_strlen(str_ptr, str.length());
 
-    for (int i = 0; i < str_utf8_len; ++i) {
-        str_ptr = unicode_get_utf8((const char*) str_ptr, &uchar);
-        if (str_ptr == NULL) {
-            break;
-        }
+    Xapian::Utf8Iterator iter(str);
+    for (; iter != Xapian::Utf8Iterator(); ++iter) {
+        uchar = *iter;
         switch (han_conv_method) {
             case HAN_CONV_TRAD2SIMP : {
                 han_convert::trad2simp(uchar);

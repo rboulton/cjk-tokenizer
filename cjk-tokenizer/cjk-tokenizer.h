@@ -3,12 +3,14 @@
 
 #include <string>
 #include <vector>
-#include <unicode.h>
+#include <xapian/unicode.h>
+
+typedef unsigned unicode_char_t;
 
 namespace cjk {
     class tokenizer_handler {
     public:
-        virtual void handle_token(const std::string &tok, bool is_cjk) {}
+        virtual void handle_token(const std::string &, bool) {}
         virtual ~tokenizer_handler() {}
     };
 
@@ -30,7 +32,7 @@ namespace cjk {
         tokenizer();
         ~tokenizer();
         void tokenize(const std::string &str,
-                      std::vector<std::string> &token_list);
+                      std::vector<std::pair<std::string, unsigned int> > &token_list);
         void tokenize(const std::string &str,
                       tokenizer_handler &handler);
 
