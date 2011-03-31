@@ -12,28 +12,19 @@ public:
     };
 };
 
-int main() {
+void test1(string text_str) {
     tokenizer tknzr;
-    vector<string> token_list;
-    vector<string>::iterator token_iter;
-    char text[] =
-        "美女遊戲等你挑戰周蕙最新鈴搶先下載茄子醬耍可愛一流"
-        "华沙是波兰的首都，也是其最大的城市。"
-        "납치 여중생 공포에 떠는데'…경찰 200m 거리 25분만에 출동"
-        "寛永通宝の一。京都方広寺の大仏をこわして1668年（寛文8）から鋳造した銅銭。"
-        "ㄅㄆㄇㄈㄉㄊㄋㄌㄧㄨㄩ"
-        "Giant Microwave Turns Plastic Back to Oil";
-    string text_str = string(text);
-
+    vector<pair<string, unsigned> > token_list;
+    vector<pair<string, unsigned> >::iterator token_iter;
     cout << "[Default]" << endl;
     token_list.clear();
     cout << "Ngram size: "  << tknzr.ngram_size << endl;
     tknzr.tokenize(text_str, token_list);
-    cout << "Original string: " << text << endl;
+    cout << "Original string: " << text_str << endl;
     cout << "Tokenized result: ";
     for (token_iter = token_list.begin();
          token_iter != token_list.end(); ++token_iter) {
-        cout << "[" << *token_iter << "] ";
+        cout << "[" << token_iter->first << "," << token_iter->second << "] ";
     }
     cout << endl << endl;
 
@@ -42,11 +33,11 @@ int main() {
     tknzr.ngram_size = 3;
     cout << "Ngram size: "  << tknzr.ngram_size << endl;
     tknzr.tokenize(text_str, token_list);
-    cout << "Original string: " << text << endl;
+    cout << "Original string: " << text_str << endl;
     cout << "Tokenized result: ";
     for (token_iter = token_list.begin();
          token_iter != token_list.end(); ++token_iter) {
-        cout << "[" << *token_iter << "] ";
+        cout << "[" << token_iter->first << "] ";
     }
     cout << endl << endl;
 
@@ -55,11 +46,11 @@ int main() {
     tknzr.ngram_size = 5;
     cout << "Ngram size: "  << tknzr.ngram_size << endl;
     tknzr.tokenize(text_str, token_list);
-    cout << "Original string: " << text << endl;
+    cout << "Original string: " << text_str << endl;
     cout << "Tokenized result: ";
     for (token_iter = token_list.begin();
          token_iter != token_list.end(); ++token_iter) {
-        cout << "[" << *token_iter << "] ";
+        cout << "[" << token_iter->first << "] ";
     }
     cout << endl << endl;
 
@@ -68,11 +59,11 @@ int main() {
     tknzr.max_token_count = 10;
     cout << "Max token count: " << tknzr.max_token_count << endl;
     tknzr.tokenize(text_str, token_list);
-    cout << "Original string: " << text << endl;
+    cout << "Original string: " << text_str << endl;
     cout << "Tokenized result: ";
     for (token_iter = token_list.begin();
          token_iter != token_list.end(); ++token_iter) {
-        cout << "[" << *token_iter << "] ";
+        cout << "[" << token_iter->first << "] ";
     }
     cout << endl << endl;
 
@@ -81,18 +72,23 @@ int main() {
     tknzr.ngram_size = 1;
     tknzr.max_token_count = 0;
     tknzr.tokenize(text_str, token_list);
-    cout << "Original string: " << text << endl;
+    cout << "Original string: " << text_str << endl;
     cout << "Tokenized result: ";
     for (token_iter = token_list.begin();
          token_iter != token_list.end(); ++token_iter) {
-        cout << "[" << *token_iter << "] ";
+        cout << "[" << token_iter->first << "] ";
     }
     cout << endl << endl;
+}
 
+void test2(string text_str) {
+    tokenizer tknzr;
+    vector<string> token_list;
+    vector<string>::iterator token_iter;
     cout << "[Split]" << endl;
     token_list.clear();
     tknzr.split(text_str, token_list);
-    cout << "Original string: " << text << endl;
+    cout << "Original string: " << text_str << endl;
     cout << "Tokenized result: ";
     for (token_iter = token_list.begin();
          token_iter != token_list.end(); ++token_iter) {
@@ -105,7 +101,7 @@ int main() {
 
     cout << "[Split (unicode_char_t)]" << endl;
     tknzr.split(text_str, uchar_list);
-    cout << "Original string: " << text << endl;
+    cout << "Original string: " << text_str << endl;
     cout << "Tokenized result: ";
     for (uchar_iter = uchar_list.begin();
          uchar_iter != uchar_list.end(); uchar_iter++) {
@@ -114,7 +110,7 @@ int main() {
     cout << endl << endl;
 
     cout << "-- CJK Segmentation" << endl;
-    cout << "Original string: " << text << endl;
+    cout << "Original string: " << text_str << endl;
     token_list.clear();
     tknzr.segment(text_str, token_list);
     cout << "Tokenized result: ";
@@ -128,7 +124,7 @@ int main() {
     token_list.clear();
     tknzr.han_conv_method = HAN_CONV_TRAD2SIMP;
     tknzr.split(text_str, token_list);
-    cout << "Original string: " << text << endl;
+    cout << "Original string: " << text_str << endl;
     cout << "Tokenized result: ";
     for (token_iter = token_list.begin();
          token_iter != token_list.end(); ++token_iter) {
@@ -140,7 +136,7 @@ int main() {
     token_list.clear();
     tknzr.han_conv_method = HAN_CONV_SIMP2TRAD;
     tknzr.split(text_str, token_list);
-    cout << "Original string: " << text << endl;
+    cout << "Original string: " << text_str << endl;
     cout << "Tokenized result: ";
     for (token_iter = token_list.begin();
          token_iter != token_list.end(); ++token_iter) {
@@ -169,5 +165,19 @@ int main() {
     cout << "[" << pure_cjk_str << "]" << " has CJK characters only? "
          << tknzr.has_cjk_only(pure_cjk_str) << endl;
     cout << endl;
+}
+
+int main() {
+    char text[] =
+        "美女遊戲等你挑戰周蕙最新鈴搶先下載茄子醬耍可愛一流"
+        "华沙是波兰的首都，也是其最大的城市。"
+        "납치 여중생 공포에 떠는데'…경찰 200m 거리 25분만에 출동"
+        "寛永通宝の一。京都方広寺の大仏をこわして1668年（寛文8）から鋳造した銅銭。"
+        "ㄅㄆㄇㄈㄉㄊㄋㄌㄧㄨㄩ"
+        "Giant Microwave Turns Plastic Back to Oil";
+    string text_str = string(text);
+
+    test1(text_str);
+    test2(text_str);
     return 0;
 }
