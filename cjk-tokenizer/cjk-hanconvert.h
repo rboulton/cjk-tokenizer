@@ -2,7 +2,7 @@
 #define __CJK_HAN_CONVERT_H__
 
 #include <vector>
-#include <xapian/unicode.h>
+#include <xapian.h>
 
 typedef unsigned unicode_char_t;
 

@@ -3,7 +3,7 @@
 
 #include <string>
 #include <vector>
-#include <xapian/unicode.h>
+#include <xapian.h>
 
 typedef unsigned unicode_char_t;
 

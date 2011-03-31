@@ -1,5 +1,5 @@
 #include <cassert>
-#include <xapian/unicode.h>
+#include <xapian.h>
 #include <cstring>
 #include "cjk-tokenizer.h"
 #include "cjk-hanconvert.h"

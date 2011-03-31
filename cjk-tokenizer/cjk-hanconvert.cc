@@ -1,5 +1,5 @@
 #include <cstdlib>
-#include <xapian/unicode.h>
+#include <xapian.h>
 #include "cjk-hanconvert.h"
 
 using namespace std;
